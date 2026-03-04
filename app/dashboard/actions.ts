@@ -7,7 +7,7 @@ export interface EventFormData {
   title: string;
   description: string;
   date: string;
-  venue: string;
+  venues: string[];
   type: string;
 }
 
@@ -18,7 +18,7 @@ export async function createEvent(formData: EventFormData) {
     title: formData.title,
     description: formData.description,
     date: formData.date,
-    venue: formData.venue,
+    venue: formData.venues,
     type: formData.type,
   });
 
@@ -39,10 +39,23 @@ export async function updateEvent(id: string, formData: EventFormData) {
       title: formData.title,
       description: formData.description,
       date: formData.date,
-      venue: formData.venue,
+      venue: formData.venues,
       type: formData.type,
     })
     .eq("id", id);
+
+  if (error) {
+    return { error: error.message };
+  }
+
+  revalidatePath("/dashboard");
+  return { success: true };
+}
+
+export async function deleteEvent(id: string) {
+  const supabase = await createClient();
+
+  const { error } = await supabase.from("events").delete().eq("id", id);
 
   if (error) {
     return { error: error.message };

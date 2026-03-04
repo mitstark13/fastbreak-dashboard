@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -31,9 +31,6 @@ const signupSchema = z
 type SignupFormValues = z.infer<typeof signupSchema>;
 
 export default function SignupPage() {
-  const [error, setError] = useState<string | null>(null);
-  const [success, setSuccess] = useState<string | null>(null);
-
   const form = useForm<SignupFormValues>({
     resolver: zodResolver(signupSchema),
     defaultValues: {
@@ -44,13 +41,11 @@ export default function SignupPage() {
   });
 
   const onSubmit = async (values: SignupFormValues) => {
-    setError(null);
-    setSuccess(null);
     const result = await signup({ email: values.email, password: values.password });
     if (result?.error) {
-      setError(result.error);
+      toast.error(result.error);
     } else if (result?.success) {
-      setSuccess(result.message);
+      toast.success(result.message);
       form.reset();
     }
   };
@@ -110,9 +105,6 @@ export default function SignupPage() {
                 </FormItem>
               )}
             />
-
-            {error && <p className="text-sm text-destructive">{error}</p>}
-            {success && <p className="text-sm text-green-600">{success}</p>}
 
             <Button
               type="submit"

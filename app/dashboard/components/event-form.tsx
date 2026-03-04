@@ -1,6 +1,8 @@
 "use client";
 
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
+import { Plus, X } from "lucide-react";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -29,7 +31,6 @@ const eventFormSchema = z.object({
   description: z.string().optional(),
   date: z.string().min(1, "Date is required"),
   time: z.string().min(1, "Time is required"),
-  venue: z.string().min(1, "Venue is required"),
   type: z.string().min(1, "Type is required"),
 });
 
@@ -43,13 +44,15 @@ interface EventFormProps {
     title: string;
     description: string;
     date: string;
-    venue: string;
+    venues: string[];
     type: string;
   };
 }
 
 export function EventForm({ open, onOpenChange, event }: EventFormProps) {
   const isEditing = !!event;
+
+  const [venues, setVenues] = useState<string[]>([""]);
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventFormSchema),
@@ -58,7 +61,6 @@ export function EventForm({ open, onOpenChange, event }: EventFormProps) {
       description: "",
       date: "",
       time: "",
-      venue: "",
       type: "",
     },
   });
@@ -73,35 +75,56 @@ export function EventForm({ open, onOpenChange, event }: EventFormProps) {
         description: event.description ?? "",
         date: dateStr,
         time: timeStr,
-        venue: event.venue,
         type: event.type,
       });
+      setVenues(event.venues.length > 0 ? event.venues : [""]);
     } else if (open && !event) {
       form.reset({
         title: "",
         description: "",
         date: "",
         time: "",
-        venue: "",
         type: "",
       });
+      setVenues([""]);
     }
   }, [open, event, form]);
 
   const handleOpenChange = (open: boolean) => {
     if (!open) {
       form.reset();
+      setVenues([""]);
     }
     onOpenChange(open);
   };
 
+  const addVenue = () => {
+    setVenues([...venues, ""]);
+  };
+
+  const removeVenue = (index: number) => {
+    setVenues(venues.filter((_, i) => i !== index));
+  };
+
+  const updateVenue = (index: number, value: string) => {
+    const newVenues = [...venues];
+    newVenues[index] = value;
+    setVenues(newVenues);
+  };
+
   const onSubmit = async (values: EventFormValues) => {
-    const dateTime = `${values.date}T${values.time}:00`;
+    const filteredVenues = venues.filter((v) => v.trim() !== "");
+    if (filteredVenues.length === 0) {
+      toast.error("At least one venue is required");
+      return;
+    }
+
+    const localDate = new Date(`${values.date}T${values.time}:00`);
     const formData = {
       title: values.title,
       description: values.description ?? "",
-      date: dateTime,
-      venue: values.venue,
+      date: localDate.toISOString(),
+      venues: filteredVenues,
       type: values.type,
     };
 
@@ -110,10 +133,11 @@ export function EventForm({ open, onOpenChange, event }: EventFormProps) {
       : await createEvent(formData);
 
     if (result.error) {
-      form.setError("root", { message: result.error });
+      toast.error(result.error);
       return;
     }
 
+    toast.success(isEditing ? "Event updated" : "Event created");
     handleOpenChange(false);
   };
 
@@ -188,19 +212,38 @@ export function EventForm({ open, onOpenChange, event }: EventFormProps) {
               )}
             />
 
-            <FormField
-              control={form.control}
-              name="venue"
-              render={({ field }) => (
-                <FormItem>
-                  <FormLabel>Venue</FormLabel>
-                  <FormControl>
-                    <Input placeholder="Event venue" {...field} />
-                  </FormControl>
-                  <FormMessage />
-                </FormItem>
-              )}
-            />
+            <div className="space-y-2">
+              <FormLabel>Venues</FormLabel>
+              {venues.map((venue, index) => (
+                <div key={index} className="flex gap-2">
+                  <Input
+                    placeholder="Event venue"
+                    value={venue}
+                    onChange={(e) => updateVenue(index, e.target.value)}
+                  />
+                  {venues.length > 1 && (
+                    <Button
+                      type="button"
+                      variant="ghost"
+                      size="icon"
+                      onClick={() => removeVenue(index)}
+                    >
+                      <X className="h-4 w-4" />
+                    </Button>
+                  )}
+                </div>
+              ))}
+              <Button
+                type="button"
+                variant="outline"
+                size="sm"
+                onClick={addVenue}
+                className="mt-2"
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                Add Venue
+              </Button>
+            </div>
 
             <FormField
               control={form.control}
@@ -218,12 +261,6 @@ export function EventForm({ open, onOpenChange, event }: EventFormProps) {
                 </FormItem>
               )}
             />
-
-            {form.formState.errors.root && (
-              <p className="text-sm text-destructive">
-                {form.formState.errors.root.message}
-              </p>
-            )}
 
             <DialogFooter>
               <Button

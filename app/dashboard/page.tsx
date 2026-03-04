@@ -6,7 +6,7 @@ interface DashboardItem {
   title: string;
   description: string;
   date: string;
-  venue: string;
+  venues: string[];
   type: string;
 }
 
@@ -22,7 +22,7 @@ async function getDashboardItems(
 
   let query = supabase
     .from("events")
-    .select("id, title, description, date, venue, type")
+    .select("id, title, description, date, venues:venue, type")
     .order("date", { ascending: true });
 
   if (searchParams.search) {

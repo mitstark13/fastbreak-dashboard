@@ -1,7 +1,7 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
+import { toast } from "sonner";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { z } from "zod";
@@ -25,8 +25,6 @@ const loginSchema = z.object({
 type LoginFormValues = z.infer<typeof loginSchema>;
 
 export default function LoginPage() {
-  const [error, setError] = useState<string | null>(null);
-
   const form = useForm<LoginFormValues>({
     resolver: zodResolver(loginSchema),
     defaultValues: {
@@ -36,10 +34,9 @@ export default function LoginPage() {
   });
 
   const onSubmit = async (values: LoginFormValues) => {
-    setError(null);
     const result = await login(values);
     if (result?.error) {
-      setError(result.error);
+      toast.error(result.error);
     }
   };
 
@@ -84,8 +81,6 @@ export default function LoginPage() {
                 </FormItem>
               )}
             />
-
-            {error && <p className="text-sm text-destructive">{error}</p>}
 
             <Button
               type="submit"
