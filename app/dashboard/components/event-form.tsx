@@ -132,12 +132,12 @@ export function EventForm({ open, onOpenChange, event }: EventFormProps) {
       ? await updateEvent(event.id, formData)
       : await createEvent(formData);
 
-    if (result.error) {
+    if (!result.success) {
       toast.error(result.error);
       return;
     }
 
-    toast.success(isEditing ? "Event updated" : "Event created");
+    toast.success(result.message ?? (isEditing ? "Event updated" : "Event created"));
     handleOpenChange(false);
   };
 

@@ -35,7 +35,7 @@ export default function LoginPage() {
 
   const onSubmit = async (values: LoginFormValues) => {
     const result = await login(values);
-    if (result?.error) {
+    if (result && !result.success) {
       toast.error(result.error);
     }
   };

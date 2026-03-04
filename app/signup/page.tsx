@@ -42,10 +42,10 @@ export default function SignupPage() {
 
   const onSubmit = async (values: SignupFormValues) => {
     const result = await signup({ email: values.email, password: values.password });
-    if (result?.error) {
+    if (!result.success) {
       toast.error(result.error);
-    } else if (result?.success) {
-      toast.success(result.message);
+    } else {
+      toast.success(result.message ?? "Account created successfully");
       form.reset();
     }
   };

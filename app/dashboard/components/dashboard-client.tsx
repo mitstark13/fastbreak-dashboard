@@ -89,10 +89,10 @@ export function DashboardClient({ items, sportTypes }: DashboardClientProps) {
     const result = await deleteEvent(deletingEvent.id);
     setIsDeleting(false);
     setDeletingEvent(null);
-    if (result.error) {
+    if (!result.success) {
       toast.error(result.error);
     } else {
-      toast.success("Event deleted");
+      toast.success(result.message ?? "Event deleted");
     }
   };
 
