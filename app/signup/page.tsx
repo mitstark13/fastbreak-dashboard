@@ -15,31 +15,43 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { login } from "./actions/auth";
+import { signup } from "../actions/auth";
 
-const loginSchema = z.object({
-  email: z.string().email("Invalid email address"),
-  password: z.string().min(1, "Password is required"),
-});
+const signupSchema = z
+  .object({
+    email: z.string().email("Invalid email address"),
+    password: z.string().min(6, "Password must be at least 6 characters"),
+    confirmPassword: z.string(),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords don't match",
+    path: ["confirmPassword"],
+  });
 
-type LoginFormValues = z.infer<typeof loginSchema>;
+type SignupFormValues = z.infer<typeof signupSchema>;
 
-export default function LoginPage() {
+export default function SignupPage() {
   const [error, setError] = useState<string | null>(null);
+  const [success, setSuccess] = useState<string | null>(null);
 
-  const form = useForm<LoginFormValues>({
-    resolver: zodResolver(loginSchema),
+  const form = useForm<SignupFormValues>({
+    resolver: zodResolver(signupSchema),
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     },
   });
 
-  const onSubmit = async (values: LoginFormValues) => {
+  const onSubmit = async (values: SignupFormValues) => {
     setError(null);
-    const result = await login(values);
+    setSuccess(null);
+    const result = await signup({ email: values.email, password: values.password });
     if (result?.error) {
       setError(result.error);
+    } else if (result?.success) {
+      setSuccess(result.message);
+      form.reset();
     }
   };
 
@@ -48,7 +60,7 @@ export default function LoginPage() {
       <div className="w-full max-w-sm space-y-8">
         <div className="text-center">
           <h1 className="text-3xl font-bold tracking-tight">Fastbreak</h1>
-          <p className="mt-2 text-muted-foreground">Sign in to your account</p>
+          <p className="mt-2 text-muted-foreground">Create your account</p>
         </div>
 
         <Form {...form}>
@@ -85,22 +97,37 @@ export default function LoginPage() {
               )}
             />
 
+            <FormField
+              control={form.control}
+              name="confirmPassword"
+              render={({ field }) => (
+                <FormItem>
+                  <FormLabel>Confirm Password</FormLabel>
+                  <FormControl>
+                    <Input type="password" placeholder="••••••••" {...field} />
+                  </FormControl>
+                  <FormMessage />
+                </FormItem>
+              )}
+            />
+
             {error && <p className="text-sm text-destructive">{error}</p>}
+            {success && <p className="text-sm text-green-600">{success}</p>}
 
             <Button
               type="submit"
               className="w-full"
               disabled={form.formState.isSubmitting}
             >
-              {form.formState.isSubmitting ? "Signing in..." : "Sign in"}
+              {form.formState.isSubmitting ? "Creating account..." : "Sign up"}
             </Button>
           </form>
         </Form>
 
         <p className="text-center text-sm text-muted-foreground">
-          Don&apos;t have an account?{" "}
-          <Link href="/signup" className="text-primary hover:underline">
-            Sign up
+          Already have an account?{" "}
+          <Link href="/" className="text-primary hover:underline">
+            Sign in
           </Link>
         </p>
       </div>
