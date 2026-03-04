@@ -57,3 +57,28 @@ export async function logout(): Promise<void> {
   await supabase.auth.signOut();
   redirect("/");
 }
+
+export async function signInWithGoogle(): Promise<ActionResult<{ url: string }>> {
+  try {
+    const supabase = await createClient();
+
+    const { data, error } = await supabase.auth.signInWithOAuth({
+      provider: "google",
+      options: {
+        redirectTo: `${process.env.NEXT_PUBLIC_SITE_URL}/auth/callback`,
+      },
+    });
+
+    if (error) {
+      return actionError("Unable to sign in with Google. Please try again.");
+    }
+
+    if (!data.url) {
+      return actionError("Unable to sign in with Google. Please try again.");
+    }
+
+    return actionSuccess({ url: data.url });
+  } catch {
+    return actionError("Unable to sign in with Google. Please try again.");
+  }
+}

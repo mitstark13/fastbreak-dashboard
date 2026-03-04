@@ -15,7 +15,8 @@ import {
   FormLabel,
   FormMessage,
 } from "@/components/ui/form";
-import { login } from "./actions/auth";
+import { login, signInWithGoogle } from "./actions/auth";
+import { GoogleIcon } from "@/components/icons/google";
 
 const loginSchema = z.object({
   email: z.string().email("Invalid email address"),
@@ -37,6 +38,15 @@ export default function LoginPage() {
     const result = await login(values);
     if (result && !result.success) {
       toast.error(result.error);
+    }
+  };
+
+  const handleGoogleSignIn = async () => {
+    const result = await signInWithGoogle();
+    if (!result.success) {
+      toast.error(result.error);
+    } else {
+      window.location.href = result.data.url;
     }
   };
 
@@ -88,6 +98,27 @@ export default function LoginPage() {
               disabled={form.formState.isSubmitting}
             >
               {form.formState.isSubmitting ? "Signing in..." : "Sign in"}
+            </Button>
+
+            <div className="relative">
+              <div className="absolute inset-0 flex items-center">
+                <span className="w-full border-t" />
+              </div>
+              <div className="relative flex justify-center text-xs uppercase">
+                <span className="bg-background px-2 text-muted-foreground">
+                  Or continue with
+                </span>
+              </div>
+            </div>
+
+            <Button
+              type="button"
+              variant="outline"
+              className="w-full"
+              onClick={handleGoogleSignIn}
+            >
+              <GoogleIcon className="mr-2 h-4 w-4" />
+              Continue with Google
             </Button>
           </form>
         </Form>
