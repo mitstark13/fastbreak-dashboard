@@ -25,7 +25,7 @@ utils/supabase/ -> Supabase client creation
 
 1. Clone the repository:
 ```sh
-git clone <repository-url>
+git clone https://github.com/mitstark13/fastbreak-dashboard.git
 cd fastbreak-dashboard
 ```
 
@@ -38,14 +38,15 @@ npm install
 ```sh
 npm run dev
 ```
+Note: You'll need to create a .env.local file with Supabase config variables to fully run the site locally
 
 ## Thought Process
-Most of the initial setup and technical decisions were already made from challenge description and listed technical requirements. The main focus was keeping things simple and focused on specific features when building each requirement out. Most of the frameworks and packages are things I've used before, but a main focus personally on the functional side was to keep all calls to the database in server components. This resulted in less JS running on the client side and things like server side filtering being possible to keep with Next.js best practices. On the design side, I tried to keep things simple while also displaying the event information in an organized way.
+Most of the initial setup and technical decisions were already made in the challenge description and listed technical requirements. The main focus was keeping things simple and focused on specific features when building each requirement out. Most of the frameworks and packages are things I've set up and used before, but a main focus personally on the functional side was to keep all calls to the database on the server side. This resulted in less JS running on the client and things like server side filtering being possible to keep with Next.js best practices. On the design side, I tried to keep things simple while also displaying the event information in an organized way.
 
 ### Questions Asked
 If this were a real project, I would get clarification on the following during the planning phase to confirm that business and engineering teams were on the same page:
 
-- Is there a specific list of Sport Types that should be supported? Currently in this app we are keeping it open ended, with a few chosen sports have specific styling.
+- Is there a specific list of Sport Types that should be supported? Currently in this app we are keeping it open ended, with a few chosen sports having specific styling.
 - Success/Error messaging content for different form submissions and errors.
 - Any event data shown on desktop and not on mobile? How to display the venues list when something like the World Cup can have many?
 - Should the edit and delete actions be open to any authenticated user or only by the user that created the event?
