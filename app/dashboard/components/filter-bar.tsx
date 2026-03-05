@@ -1,7 +1,7 @@
 "use client";
 
 import { useRouter, useSearchParams } from "next/navigation";
-import { useCallback, useState, useTransition } from "react";
+import { useCallback, useEffect, useRef, useState, useTransition } from "react";
 import { Search } from "lucide-react";
 import { Input } from "@/components/ui/input";
 import {
@@ -41,17 +41,30 @@ export function FilterBar({ sportTypes }: FilterBarProps) {
     [searchParams]
   );
 
+  const debounceRef = useRef<NodeJS.Timeout | null>(null);
+
   const handleSearchChange = (value: string) => {
     setSearch(value);
+
+    if (debounceRef.current) {
+      clearTimeout(debounceRef.current);
+    }
+
+    debounceRef.current = setTimeout(() => {
+      startTransition(() => {
+        const queryString = createQueryString({ search: value });
+        router.push(`/dashboard${queryString ? `?${queryString}` : ""}`);
+      });
+    }, 400);
   };
 
-  const handleSearchSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    startTransition(() => {
-      const queryString = createQueryString({ search });
-      router.push(`/dashboard${queryString ? `?${queryString}` : ""}`);
-    });
-  };
+  useEffect(() => {
+    return () => {
+      if (debounceRef.current) {
+        clearTimeout(debounceRef.current);
+      }
+    };
+  }, []);
 
   const handleSportChange = (value: string) => {
     setSportType(value);
@@ -65,15 +78,15 @@ export function FilterBar({ sportTypes }: FilterBarProps) {
 
   return (
     <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-center">
-      <form onSubmit={handleSearchSubmit} className="relative flex-1">
+      <div className="relative flex-1">
         <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
         <Input
-          placeholder="Search by name..."
+          placeholder="Search by event name..."
           value={search}
           onChange={(e) => handleSearchChange(e.target.value)}
           className="pl-9"
         />
-      </form>
+      </div>
 
       <Select
         value={sportType}

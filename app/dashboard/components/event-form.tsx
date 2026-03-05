@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import { Plus, X } from "lucide-react";
 import { toast } from "sonner";
 import { useForm } from "react-hook-form";
@@ -50,52 +50,52 @@ interface EventFormProps {
 }
 
 export function EventForm({ open, onOpenChange, event }: EventFormProps) {
+  return (
+    <Dialog open={open} onOpenChange={onOpenChange}>
+      {open && (
+        <EventFormContent
+          event={event}
+          onOpenChange={onOpenChange}
+        />
+      )}
+    </Dialog>
+  );
+}
+
+function EventFormContent({
+  event,
+  onOpenChange,
+}: {
+  event: EventFormProps["event"];
+  onOpenChange: (open: boolean) => void;
+}) {
   const isEditing = !!event;
 
-  const [venues, setVenues] = useState<string[]>([""]);
+  const getInitialFormValues = (): EventFormValues => {
+    if (event) {
+      const eventDate = new Date(event.date);
+      return {
+        title: event.title,
+        description: event.description ?? "",
+        date: eventDate.toISOString().split("T")[0],
+        time: eventDate.toTimeString().slice(0, 5),
+        type: event.type,
+      };
+    }
+    return { title: "", description: "", date: "", time: "", type: "" };
+  };
+
+  const [venues, setVenues] = useState<string[]>(
+    event?.venues?.length ? event.venues : [""]
+  );
 
   const form = useForm<EventFormValues>({
     resolver: zodResolver(eventFormSchema),
-    defaultValues: {
-      title: "",
-      description: "",
-      date: "",
-      time: "",
-      type: "",
-    },
+    defaultValues: getInitialFormValues(),
   });
 
-  useEffect(() => {
-    if (open && event) {
-      const eventDate = new Date(event.date);
-      const dateStr = eventDate.toISOString().split("T")[0];
-      const timeStr = eventDate.toTimeString().slice(0, 5);
-      form.reset({
-        title: event.title,
-        description: event.description ?? "",
-        date: dateStr,
-        time: timeStr,
-        type: event.type,
-      });
-      setVenues(event.venues.length > 0 ? event.venues : [""]);
-    } else if (open && !event) {
-      form.reset({
-        title: "",
-        description: "",
-        date: "",
-        time: "",
-        type: "",
-      });
-      setVenues([""]);
-    }
-  }, [open, event, form]);
-
-  const handleOpenChange = (open: boolean) => {
-    if (!open) {
-      form.reset();
-      setVenues([""]);
-    }
-    onOpenChange(open);
+  const handleClose = () => {
+    onOpenChange(false);
   };
 
   const addVenue = () => {
@@ -138,11 +138,10 @@ export function EventForm({ open, onOpenChange, event }: EventFormProps) {
     }
 
     toast.success(result.message ?? (isEditing ? "Event updated" : "Event created"));
-    handleOpenChange(false);
+    handleClose();
   };
 
   return (
-    <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogContent>
         <DialogHeader>
           <DialogTitle>
@@ -266,7 +265,7 @@ export function EventForm({ open, onOpenChange, event }: EventFormProps) {
               <Button
                 type="button"
                 variant="outline"
-                onClick={() => handleOpenChange(false)}
+                onClick={handleClose}
               >
                 Cancel
               </Button>
@@ -281,6 +280,5 @@ export function EventForm({ open, onOpenChange, event }: EventFormProps) {
           </form>
         </Form>
       </DialogContent>
-    </Dialog>
   );
 }
