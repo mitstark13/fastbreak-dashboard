@@ -14,10 +14,10 @@ import {
   AlertDialogTitle,
 } from "@/components/ui/alert-dialog";
 import {
-  Tooltip,
-  TooltipContent,
-  TooltipTrigger,
-} from "@/components/ui/tooltip";
+  Popover,
+  PopoverContent,
+  PopoverTrigger,
+} from "@/components/ui/popover";
 import { EventForm } from "./event-form";
 import { FilterBar } from "./filter-bar";
 import { LogoutButton } from "./logout-button";
@@ -158,21 +158,21 @@ export function DashboardClient({ items, sportTypes }: DashboardClientProps) {
                   {item.venues.length === 1 ? (
                     <span>{item.venues[0]}</span>
                   ) : (
-                    <Tooltip>
-                      <TooltipTrigger asChild>
-                        <span className="flex cursor-default items-center gap-1">
+                    <Popover>
+                      <PopoverTrigger asChild>
+                        <button className="flex cursor-pointer items-center gap-1 hover:text-foreground">
                           Multiple
                           <Info className="h-3 w-3" />
-                        </span>
-                      </TooltipTrigger>
-                      <TooltipContent>
-                        <ul className="list-none">
+                        </button>
+                      </PopoverTrigger>
+                      <PopoverContent className="w-auto p-3">
+                        <ul className="list-none text-sm">
                           {item.venues.map((venue, idx) => (
                             <li key={idx}>{venue}</li>
                           ))}
                         </ul>
-                      </TooltipContent>
-                    </Tooltip>
+                      </PopoverContent>
+                    </Popover>
                   )}
                 </div>
                 <div className="flex items-center gap-1">

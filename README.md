@@ -65,7 +65,7 @@ Things I'd want to implement next given more time and project freedom:
 - Expand the filters and sorting capabilities to be more user friendly (sorting by date)
 - Add component and unit tests for main functionality
 - Better design for the page to not look like it was built straight from ShadCN docs (which it basically was)
-- Better data validation for form submissions
+- Data validation for form submissions to validate before making the database calls
 
 ## Docs
 - [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying)
