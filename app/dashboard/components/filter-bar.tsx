@@ -41,6 +41,8 @@ export function FilterBar({ sportTypes }: FilterBarProps) {
     [searchParams]
   );
 
+  // Debouncing search input to prevent too many requests
+  // Only trigger the search after the user has stopped typing for 400ms
   const debounceRef = useRef<NodeJS.Timeout | null>(null);
 
   const handleSearchChange = (value: string) => {
@@ -58,6 +60,7 @@ export function FilterBar({ sportTypes }: FilterBarProps) {
     }, 400);
   };
 
+  // Cleanup timeout on unmount
   useEffect(() => {
     return () => {
       if (debounceRef.current) {
