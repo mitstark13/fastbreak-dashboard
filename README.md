@@ -18,7 +18,7 @@ This is a Next.js application for the Fastbreak AI Sports Event Dashboard.
 app/ -> Main application routes/pages, global Tailwind styles, server actions for database interactions
 components/ -> ShadCN UI components
 lib/ -> Reusable functions for uniformed error handling and tailwind class merges
-utils/supabase/ -> Supabase client creation server file
+utils/supabase/ -> Supabase client creation
 ```
 
 ## Cloning and Local Development
