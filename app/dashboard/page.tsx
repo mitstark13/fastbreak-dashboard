@@ -15,6 +15,8 @@ interface SearchParams {
   type?: string;
 }
 
+// Pulling events from Supabase, determining used sport types, and loading the dashboard
+
 async function getDashboardItems(
   searchParams: SearchParams
 ): Promise<DashboardItem[]> {

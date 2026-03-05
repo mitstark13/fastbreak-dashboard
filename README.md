@@ -40,7 +40,7 @@ npm run dev
 ```
 
 ## Thought Process
-Most of the initial setup and technical decisions were already made from challenge description and listed technical requirements. The main focus was keeping things simple and focused on specific features when building each requirement out. Most of the frameworks and packages are things I've used before, but a main focus personally on the functional side was to keep all calls to the database in server components. On the design side, I tried to keep things simple while also displaying the event information in an organized way.
+Most of the initial setup and technical decisions were already made from challenge description and listed technical requirements. The main focus was keeping things simple and focused on specific features when building each requirement out. Most of the frameworks and packages are things I've used before, but a main focus personally on the functional side was to keep all calls to the database in server components. This resulted in less JS running on the client side and things like server side filtering being possible to keep with Next.js best practices. On the design side, I tried to keep things simple while also displaying the event information in an organized way.
 
 ### Questions Asked
 If this were a real project, I would get clarification on the following during the planning phase to confirm that business and engineering teams were on the same page:
@@ -58,6 +58,7 @@ Again, most of the big decisions were made in the project requirements. Some sma
   - All success and error messages should be more user friendly and readable rather than using the message back from Supabase
   - This also needed the API responses to be consistent and typed
 - Debounced search when filtering by event name to cut down on api calls and glitchy UI
+- Server side filtering with url search params resulting in shareable/revisitable urls
 
 ## Next Steps
 Things I'd want to implement next given more time and project freedom:

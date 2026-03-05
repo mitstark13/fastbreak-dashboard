@@ -4,6 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 import { revalidatePath } from "next/cache";
 import { ActionResult, actionError, actionSuccess } from "@/lib/actions";
 
+// Server actions for CRUD event operations
+
 export interface EventFormData {
   title: string;
   description: string;

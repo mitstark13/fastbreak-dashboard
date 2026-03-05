@@ -4,6 +4,8 @@ import { createClient } from "@/utils/supabase/server";
 import { redirect } from "next/navigation";
 import { ActionResult, actionError, actionSuccess } from "@/lib/actions";
 
+// Server actions for authentication with email/password and Google
+
 export async function login(
   formData: { email: string; password: string }
 ): Promise<ActionResult<void>> {

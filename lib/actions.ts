@@ -1,3 +1,5 @@
+// Consistent action result types and message handling
+
 export type ActionResult<T = void> =
   | { success: true; data: T; message?: string }
   | { success: false; error: string };

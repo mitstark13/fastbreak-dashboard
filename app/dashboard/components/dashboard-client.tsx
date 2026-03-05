@@ -24,6 +24,8 @@ import { LogoutButton } from "./logout-button";
 import { deleteEvent } from "../actions";
 import { toast } from "sonner";
 
+// Main high level component for the dashboard page
+
 interface DashboardItem {
   id: string;
   title: string;
@@ -54,6 +56,7 @@ function formatTime(dateString: string): string {
 }
 
 function getBorderColorClass(type: string): string {
+  // TODO: Align on full sport type list and export this mapping to separate file
   const typeMap: Record<string, string> = {
     golf: "border-green-500",
     basketball: "border-orange-500",
